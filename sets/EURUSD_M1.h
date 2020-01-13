@@ -10,15 +10,12 @@ struct Stg_Awesome_EURUSD_M1_Params : Stg_Awesome_Params {
     symbol = "EURUSD";
     tf = PERIOD_M1;
     Awesome_Shift = 0;
-    Awesome_TrailingStopMethod = 0;
-    Awesome_TrailingProfitMethod = 0;
+    Awesome_SignalOpenMethod = 0;
     Awesome_SignalOpenLevel = 0;
-    Awesome_SignalBaseMethod = 0;
-    Awesome_SignalOpenMethod1 = 0;
-    Awesome_SignalOpenMethod2 = 0;
+    Awesome_SignalCloseMethod = 0;
     Awesome_SignalCloseLevel = 0;
-    Awesome_SignalCloseMethod1 = 0;
-    Awesome_SignalCloseMethod2 = 0;
+    Awesome_PriceLimitMethod = 0;
+    Awesome_PriceLimitLevel = 0;
     Awesome_MaxSpread = 0;
   }
 };
