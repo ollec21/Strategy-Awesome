@@ -92,44 +92,28 @@ class Stg_Awesome : public Strategy {
    * Check strategy's opening signal.
    */
   bool SignalOpen(ENUM_ORDER_TYPE _cmd, int _method = 0, double _level = 0.0) {
-    bool _result = false;
-    double ao_0 = ((Indi_AO *)this.Data()).GetValue(0);
-    double ao_1 = ((Indi_AO *)this.Data()).GetValue(1);
-    double ao_2 = ((Indi_AO *)this.Data()).GetValue(2);
+    Indicator *_indi = Data();
+    bool _is_valid = _indi[CURR].IsValid();
+    bool _result = _is_valid;
+    double _level_pips = _level * Chart().GetPipSize();
     switch (_cmd) {
-      /*
-        //7. Awesome Oscillator
-        //Buy: 1. Signal "saucer" (3 positive columns, medium column is smaller than 2 others); 2. Changing from
-        negative values to positive.
-        //Sell: 1. Signal "saucer" (3 negative columns, medium column is larger than 2 others); 2. Changing from
-        positive values to negative. if
-        ((iAO(NULL,piao,2)>0&&iAO(NULL,piao,1)>0&&iAO(NULL,piao,0)>0&&iAO(NULL,piao,1)<iAO(NULL,piao,2)&&iAO(NULL,piao,1)<iAO(NULL,piao,0))||(iAO(NULL,piao,1)<0&&iAO(NULL,piao,0)>0))
-        {f7=1;}
-        if
-        ((iAO(NULL,piao,2)<0&&iAO(NULL,piao,1)<0&&iAO(NULL,piao,0)<0&&iAO(NULL,piao,1)>iAO(NULL,piao,2)&&iAO(NULL,piao,1)>iAO(NULL,piao,0))||(iAO(NULL,piao,1)>0&&iAO(NULL,piao,0)<0))
-        {f7=-1;}
-      */
       case ORDER_TYPE_BUY:
-        /*
-          bool _result = Awesome_0[LINE_LOWER] != 0.0 || Awesome_1[LINE_LOWER] != 0.0 || Awesome_2[LINE_LOWER] != 0.0;
-          if (METHOD(_method, 0)) _result &= Open[CURR] > Close[CURR];
-          if (METHOD(_method, 1)) _result &= !Awesome_On_Sell(tf);
-          if (METHOD(_method, 2)) _result &= Awesome_On_Buy(fmin(period + 1, M30));
-          if (METHOD(_method, 3)) _result &= Awesome_On_Buy(M30);
-          if (METHOD(_method, 4)) _result &= Awesome_2[LINE_LOWER] != 0.0;
-          if (METHOD(_method, 5)) _result &= !Awesome_On_Sell(M30);
-          */
+        // Buy: 1. Signal "saucer" (3 positive columns, medium column is smaller than 2 others).
+        // 2. Changing from negative values to positive.
+        _result = _indi[CURR].value[0] > _indi[PREV].value[0];
+        if (METHOD(_method, 0)) _result &= _indi[PREV].value[0] > _indi[PPREV].value[0];
+        if (METHOD(_method, 1)) _result &= _indi[PPREV].value[0] > _indi[3].value[0];
+        if (METHOD(_method, 2)) _result &= _indi[CURR].value[0] > 0;
+        if (METHOD(_method, 3)) _result &= _indi[PPREV].value[0] < 0;
         break;
       case ORDER_TYPE_SELL:
-        /*
-          bool _result = Awesome_0[LINE_UPPER] != 0.0 || Awesome_1[LINE_UPPER] != 0.0 || Awesome_2[LINE_UPPER] != 0.0;
-          if (METHOD(_method, 0)) _result &= Open[CURR] < Close[CURR];
-          if (METHOD(_method, 1)) _result &= !Awesome_On_Buy(tf);
-          if (METHOD(_method, 2)) _result &= Awesome_On_Sell(fmin(period + 1, M30));
-          if (METHOD(_method, 3)) _result &= Awesome_On_Sell(M30);
-          if (METHOD(_method, 4)) _result &= Awesome_2[LINE_UPPER] != 0.0;
-          if (METHOD(_method, 5)) _result &= !Awesome_On_Buy(M30);
-          */
+        // Sell: 1. Signal "saucer" (3 negative columns, medium column is larger than 2 others).
+        // 2. Changing from positive values to negative.
+        _result = _indi[CURR].value[0] < _indi[PREV].value[0];
+        if (METHOD(_method, 0)) _result &= _indi[PREV].value[0] < _indi[PPREV].value[0];
+        if (METHOD(_method, 1)) _result &= _indi[PPREV].value[0] < _indi[3].value[0];
+        if (METHOD(_method, 2)) _result &= _indi[CURR].value[0] < 0;
+        if (METHOD(_method, 3)) _result &= _indi[PPREV].value[0] > 0;
         break;
     }
     return _result;
@@ -179,7 +163,7 @@ class Stg_Awesome : public Strategy {
    */
   double PriceLimit(ENUM_ORDER_TYPE _cmd, ENUM_ORDER_TYPE_VALUE _mode, int _method = 0, double _level = 0.0) {
     double _trail = _level * Market().GetPipSize();
-    int _direction = Order::OrderDirection(_cmd) * (_mode == ORDER_TYPE_SL ? -1 : 1);
+    int _direction = Order::OrderDirection(_cmd, _mode);
     double _default_value = Market().GetCloseOffer(_cmd) + _trail * _method * _direction;
     double _result = _default_value;
     switch (_method) {
