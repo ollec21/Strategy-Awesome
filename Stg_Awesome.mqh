@@ -77,7 +77,7 @@ class Stg_Awesome : public Strategy {
     // Initialize strategy parameters.
     AOParams ao_params(_tf);
     StgParams sparams(new Trade(_tf, _Symbol), new Indi_AO(ao_params), NULL, NULL);
-    sparams.logger.SetLevel(_log_level);
+    sparams.logger.Ptr().SetLevel(_log_level);
     sparams.SetMagicNo(_magic_no);
     sparams.SetSignals(_params.Awesome_SignalOpenMethod, _params.Awesome_SignalOpenLevel,
                        _params.Awesome_SignalOpenFilterMethod, _params.Awesome_SignalOpenBoostMethod,
