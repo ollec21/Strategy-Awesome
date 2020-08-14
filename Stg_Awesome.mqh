@@ -6,14 +6,14 @@
 // User input params.
 INPUT int Awesome_Shift = 0;                     // Shift (relative to the current bar, 0 - default)
 INPUT int Awesome_SignalOpenMethod = 0;          // Signal open method (0-1)
-INPUT float Awesome_SignalOpenLevel = 0.0004;   // Signal open level (>0.0001)
+INPUT float Awesome_SignalOpenLevel = 0.0004f;   // Signal open level (>0.0001)
 INPUT int Awesome_SignalOpenFilterMethod = 0;    // Signal open filter method (0-1)
 INPUT int Awesome_SignalOpenBoostMethod = 0;     // Signal open boost method (0-1)
-INPUT float Awesome_SignalCloseLevel = 0.0004;  // Signal close level (>0.0001)
+INPUT float Awesome_SignalCloseLevel = 0.0004f;  // Signal close level (>0.0001)
 INPUT int Awesome_SignalCloseMethod = 0;         // Signal close method
 INPUT int Awesome_PriceLimitMethod = 0;          // Price limit method
-INPUT float Awesome_PriceLimitLevel = 0;        // Price limit level
-INPUT float Awesome_MaxSpread = 6.0;            // Max spread to trade (pips)
+INPUT float Awesome_PriceLimitLevel = 0;         // Price limit level
+INPUT float Awesome_MaxSpread = 6.0;             // Max spread to trade (pips)
 
 // Includes.
 #include <EA31337-classes/Indicators/Indi_AO.mqh>
@@ -25,14 +25,14 @@ struct Stg_Awesome_Params : StgParams {
   ENUM_APPLIED_PRICE Awesome_Applied_Price;
   int Awesome_Shift;
   int Awesome_SignalOpenMethod;
-  double Awesome_SignalOpenLevel;
+  float Awesome_SignalOpenLevel;
   int Awesome_SignalOpenFilterMethod;
   int Awesome_SignalOpenBoostMethod;
-  double Awesome_SignalCloseLevel;
+  float Awesome_SignalCloseLevel;
   int Awesome_SignalCloseMethod;
   int Awesome_PriceLimitMethod;
-  double Awesome_PriceLimitLevel;
-  double Awesome_MaxSpread;
+  float Awesome_PriceLimitLevel;
+  float Awesome_MaxSpread;
 
   // Constructor: Set default param values.
   Stg_Awesome_Params()
@@ -130,6 +130,6 @@ class Stg_Awesome : public Strategy {
         break;
       }
     }
-    return _result;
+    return (float)_result;
   }
 };
