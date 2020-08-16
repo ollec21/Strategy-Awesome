@@ -3,8 +3,12 @@
  * Implements Awesome strategy based on for the Awesome oscillator.
  */
 
+// Includes.
+#include <EA31337-classes/Indicators/Indi_AO.mqh>
+#include <EA31337-classes/Strategy.mqh>
+
 // User input params.
-INPUT int Awesome_Shift = 0;                     // Shift (relative to the current bar, 0 - default)
+INPUT float Awesome_LotSize = 0;                 // Lot size
 INPUT int Awesome_SignalOpenMethod = 0;          // Signal open method (0-1)
 INPUT float Awesome_SignalOpenLevel = 0.0004f;   // Signal open level (>0.0001)
 INPUT int Awesome_SignalOpenFilterMethod = 0;    // Signal open filter method (0-1)
@@ -13,44 +17,33 @@ INPUT float Awesome_SignalCloseLevel = 0.0004f;  // Signal close level (>0.0001)
 INPUT int Awesome_SignalCloseMethod = 0;         // Signal close method
 INPUT int Awesome_PriceLimitMethod = 0;          // Price limit method
 INPUT float Awesome_PriceLimitLevel = 0;         // Price limit level
+INPUT int Awesome_TickFilterMethod = 0;          // Tick filter method
 INPUT float Awesome_MaxSpread = 6.0;             // Max spread to trade (pips)
+INPUT int Awesome_Shift = 0;                     // Shift (relative to the current bar, 0 - default)
 
-// Includes.
-#include <EA31337-classes/Indicators/Indi_AO.mqh>
-#include <EA31337-classes/Strategy.mqh>
+// Structs.
+
+// Defines struct with default user strategy values.
+struct Stg_Awesome_Params_Defaults : StgParams {
+  Stg_Awesome_Params_Defaults()
+      : StgParams(::Awesome_SignalOpenMethod, ::Awesome_SignalOpenFilterMethod, ::Awesome_SignalOpenLevel,
+                  ::Awesome_SignalOpenBoostMethod, ::Awesome_SignalCloseMethod, ::Awesome_SignalCloseLevel,
+                  ::Awesome_PriceLimitMethod, ::Awesome_PriceLimitLevel, ::Awesome_TickFilterMethod,
+                  ::Awesome_MaxSpread, ::Awesome_Shift) {}
+} stg_awesome_defaults;
 
 // Struct to define strategy parameters to override.
 struct Stg_Awesome_Params : StgParams {
-  unsigned int Awesome_Period;
-  ENUM_APPLIED_PRICE Awesome_Applied_Price;
-  int Awesome_Shift;
-  int Awesome_SignalOpenMethod;
-  float Awesome_SignalOpenLevel;
-  int Awesome_SignalOpenFilterMethod;
-  int Awesome_SignalOpenBoostMethod;
-  float Awesome_SignalCloseLevel;
-  int Awesome_SignalCloseMethod;
-  int Awesome_PriceLimitMethod;
-  float Awesome_PriceLimitLevel;
-  float Awesome_MaxSpread;
+  StgParams sparams;
 
-  // Constructor: Set default param values.
-  Stg_Awesome_Params()
-      : Awesome_Shift(::Awesome_Shift),
-        Awesome_SignalOpenMethod(::Awesome_SignalOpenMethod),
-        Awesome_SignalOpenLevel(::Awesome_SignalOpenLevel),
-        Awesome_SignalOpenFilterMethod(::Awesome_SignalOpenFilterMethod),
-        Awesome_SignalOpenBoostMethod(::Awesome_SignalOpenBoostMethod),
-        Awesome_SignalCloseMethod(::Awesome_SignalCloseMethod),
-        Awesome_SignalCloseLevel(::Awesome_SignalCloseLevel),
-        Awesome_PriceLimitMethod(::Awesome_PriceLimitMethod),
-        Awesome_PriceLimitLevel(::Awesome_PriceLimitLevel),
-        Awesome_MaxSpread(::Awesome_MaxSpread) {}
+  // Struct constructors.
+  Stg_Awesome_Params(StgParams &_sparams) : sparams(stg_awesome_defaults) { sparams = _sparams; }
 };
 
 // Loads pair specific param values.
 #include "sets/EURUSD_H1.h"
 #include "sets/EURUSD_H4.h"
+#include "sets/EURUSD_H8.h"
 #include "sets/EURUSD_M1.h"
 #include "sets/EURUSD_M15.h"
 #include "sets/EURUSD_M30.h"
@@ -62,23 +55,21 @@ class Stg_Awesome : public Strategy {
 
   static Stg_Awesome *Init(ENUM_TIMEFRAMES _tf = NULL, long _magic_no = NULL, ENUM_LOG_LEVEL _log_level = V_INFO) {
     // Initialize strategy initial values.
-    Stg_Awesome_Params _params;
+    StgParams _stg_params(stg_awesome_defaults);
     if (!Terminal::IsOptimization()) {
-      SetParamsByTf<Stg_Awesome_Params>(_params, _tf, stg_ao_m1, stg_ao_m5, stg_ao_m15, stg_ao_m30, stg_ao_h1,
-                                        stg_ao_h4, stg_ao_h4);
+      SetParamsByTf<StgParams>(_stg_params, _tf, stg_awesome_m1, stg_awesome_m5, stg_awesome_m15, stg_awesome_m30,
+                               stg_awesome_h1, stg_awesome_h4, stg_awesome_h8);
     }
+    // Initialize indicator.
+    AOParams _indi_params(_tf);
+    _stg_params.SetIndicator(new Indi_AO(_indi_params));
     // Initialize strategy parameters.
-    AOParams ao_params(_tf);
-    StgParams sparams(new Trade(_tf, _Symbol), new Indi_AO(ao_params), NULL, NULL);
-    sparams.logger.Ptr().SetLevel(_log_level);
-    sparams.SetMagicNo(_magic_no);
-    sparams.SetSignals(_params.Awesome_SignalOpenMethod, _params.Awesome_SignalOpenLevel,
-                       _params.Awesome_SignalOpenFilterMethod, _params.Awesome_SignalOpenBoostMethod,
-                       _params.Awesome_SignalCloseMethod, _params.Awesome_SignalCloseMethod);
-    sparams.SetPriceLimits(_params.Awesome_PriceLimitMethod, _params.Awesome_PriceLimitLevel);
-    sparams.SetMaxSpread(_params.Awesome_MaxSpread);
+    _stg_params.GetLog().SetLevel(_log_level);
+    _stg_params.SetMagicNo(_magic_no);
+    _stg_params.SetTf(_tf, _Symbol);
     // Initialize strategy instance.
-    Strategy *_strat = new Stg_Awesome(sparams, "Awesome");
+    Strategy *_strat = new Stg_Awesome(_stg_params, "Awesome");
+    _stg_params.SetStops(_strat, _strat);
     return _strat;
   }
 

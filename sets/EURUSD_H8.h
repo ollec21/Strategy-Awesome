@@ -4,9 +4,9 @@
  */
 
 // Defines strategy's parameter values for the given pair symbol and timeframe.
-struct Stg_Awesome_Params_M30 : StgParams {
+struct Stg_Awesome_Params_H8 : StgParams {
   // Struct constructor.
-  Stg_Awesome_Params_M30() : StgParams(stg_awesome_defaults) {
+  Stg_Awesome_Params_H8() : StgParams(stg_awesome_defaults) {
     lot_size = 0;
     signal_open_method = 0;
     signal_open_filter = 1;
@@ -19,4 +19,4 @@ struct Stg_Awesome_Params_M30 : StgParams {
     tick_filter_method = 1;
     max_spread = 0;
   }
-} stg_awesome_m30;
+} stg_awesome_h8;

@@ -1,19 +1,22 @@
-//+------------------------------------------------------------------+
-//|                  EA31337 - multi-strategy advanced trading robot |
-//|                       Copyright 2016-2020, 31337 Investments Ltd |
-//|                                       https://github.com/EA31337 |
-//+------------------------------------------------------------------+
+/*
+ * @file
+ * Defines default strategy parameter values for the given timeframe.
+ */
 
 // Defines strategy's parameter values for the given pair symbol and timeframe.
-struct Stg_Awesome_EURUSD_M15_Params : Stg_Awesome_Params {
-  Stg_Awesome_EURUSD_M15_Params() {
-    Awesome_Shift = 0;
-    Awesome_SignalOpenMethod = 0;
-    Awesome_SignalOpenLevel = 0;
-    Awesome_SignalCloseMethod = 0;
-    Awesome_SignalCloseLevel = 0;
-    Awesome_PriceLimitMethod = 0;
-    Awesome_PriceLimitLevel = 0;
-    Awesome_MaxSpread = 0;
+struct Stg_Awesome_Params_M15 : StgParams {
+  // Struct constructor.
+  Stg_Awesome_Params_M15() : StgParams(stg_awesome_defaults) {
+    lot_size = 0;
+    signal_open_method = 0;
+    signal_open_filter = 1;
+    signal_open_level = 0;
+    signal_open_boost = 0;
+    signal_close_method = 0;
+    signal_close_level = 0;
+    price_limit_method = 0;
+    price_limit_level = 2;
+    tick_filter_method = 1;
+    max_spread = 0;
   }
-} stg_ao_m15;
+} stg_awesome_m15;
