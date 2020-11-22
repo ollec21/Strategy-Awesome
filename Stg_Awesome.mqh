@@ -15,8 +15,8 @@ INPUT int Awesome_SignalOpenFilterMethod = 0;    // Signal open filter method (0
 INPUT int Awesome_SignalOpenBoostMethod = 0;     // Signal open boost method (0-1)
 INPUT float Awesome_SignalCloseLevel = 0.0004f;  // Signal close level (>0.0001)
 INPUT int Awesome_SignalCloseMethod = 0;         // Signal close method
-INPUT int Awesome_PriceLimitMethod = 0;          // Price limit method
-INPUT float Awesome_PriceLimitLevel = 0;         // Price limit level
+INPUT int Awesome_PriceStopMethod = 0;           // Price stop method
+INPUT float Awesome_PriceStopLevel = 0;          // Price stop level
 INPUT int Awesome_TickFilterMethod = 0;          // Tick filter method
 INPUT float Awesome_MaxSpread = 6.0;             // Max spread to trade (pips)
 INPUT int Awesome_Shift = 0;                     // Shift (relative to the current bar, 0 - default)
@@ -28,8 +28,8 @@ struct Stg_Awesome_Params_Defaults : StgParams {
   Stg_Awesome_Params_Defaults()
       : StgParams(::Awesome_SignalOpenMethod, ::Awesome_SignalOpenFilterMethod, ::Awesome_SignalOpenLevel,
                   ::Awesome_SignalOpenBoostMethod, ::Awesome_SignalCloseMethod, ::Awesome_SignalCloseLevel,
-                  ::Awesome_PriceLimitMethod, ::Awesome_PriceLimitLevel, ::Awesome_TickFilterMethod,
-                  ::Awesome_MaxSpread, ::Awesome_Shift) {}
+                  ::Awesome_PriceStopMethod, ::Awesome_PriceStopLevel, ::Awesome_TickFilterMethod, ::Awesome_MaxSpread,
+                  ::Awesome_Shift) {}
 } stg_awesome_defaults;
 
 // Struct to define strategy parameters to override.
@@ -105,9 +105,9 @@ class Stg_Awesome : public Strategy {
   }
 
   /**
-   * Gets price limit value for profit take or stop loss.
+   * Gets price stop value for profit take or stop loss.
    */
-  float PriceLimit(ENUM_ORDER_TYPE _cmd, ENUM_ORDER_TYPE_VALUE _mode, int _method = 0, float _level = 0.0) {
+  float PriceStop(ENUM_ORDER_TYPE _cmd, ENUM_ORDER_TYPE_VALUE _mode, int _method = 0, float _level = 0.0) {
     Indi_AO *_indi = Data();
     double _trail = _level * Market().GetPipSize();
     int _direction = Order::OrderDirection(_cmd, _mode);
