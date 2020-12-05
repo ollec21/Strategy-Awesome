@@ -85,20 +85,20 @@ class Stg_Awesome : public Strategy {
       case ORDER_TYPE_BUY:
         // Buy: 1. Signal "saucer" (3 positive columns, medium column is smaller than 2 others).
         // 2. Changing from negative values to positive.
-        _result = _indi[CURR].value[0] > _indi[PREV].value[0];
-        if (METHOD(_method, 0)) _result &= _indi[PREV].value[0] > _indi[PPREV].value[0];
-        if (METHOD(_method, 1)) _result &= _indi[PPREV].value[0] > _indi[3].value[0];
-        if (METHOD(_method, 2)) _result &= _indi[CURR].value[0] > 0;
-        if (METHOD(_method, 3)) _result &= _indi[PPREV].value[0] < 0;
+        _result = _indi[CURR][0] > _indi[PREV][0];
+        if (METHOD(_method, 0)) _result &= _indi[PREV][0] > _indi[PPREV][0];
+        if (METHOD(_method, 1)) _result &= _indi[PPREV][0] > _indi[3][0];
+        if (METHOD(_method, 2)) _result &= _indi[CURR][0] > 0;
+        if (METHOD(_method, 3)) _result &= _indi[PPREV][0] < 0;
         break;
       case ORDER_TYPE_SELL:
         // Sell: 1. Signal "saucer" (3 negative columns, medium column is larger than 2 others).
         // 2. Changing from positive values to negative.
-        _result = _indi[CURR].value[0] < _indi[PREV].value[0];
-        if (METHOD(_method, 0)) _result &= _indi[PREV].value[0] < _indi[PPREV].value[0];
-        if (METHOD(_method, 1)) _result &= _indi[PPREV].value[0] < _indi[3].value[0];
-        if (METHOD(_method, 2)) _result &= _indi[CURR].value[0] < 0;
-        if (METHOD(_method, 3)) _result &= _indi[PPREV].value[0] > 0;
+        _result = _indi[CURR][0] < _indi[PREV][0];
+        if (METHOD(_method, 0)) _result &= _indi[PREV][0] < _indi[PPREV][0];
+        if (METHOD(_method, 1)) _result &= _indi[PPREV][0] < _indi[3][0];
+        if (METHOD(_method, 2)) _result &= _indi[CURR][0] < 0;
+        if (METHOD(_method, 3)) _result &= _indi[PPREV][0] > 0;
         break;
     }
     return _result;
