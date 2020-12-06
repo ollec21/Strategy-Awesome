@@ -3,10 +3,6 @@
  * Implements Awesome strategy based on for the Awesome oscillator.
  */
 
-// Includes.
-#include <EA31337-classes/Indicators/Indi_AO.mqh>
-#include <EA31337-classes/Strategy.mqh>
-
 // User input params.
 INPUT float Awesome_LotSize = 0;                 // Lot size
 INPUT int Awesome_SignalOpenMethod = 0;          // Signal open method (0-1)

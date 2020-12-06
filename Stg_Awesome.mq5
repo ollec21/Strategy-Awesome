@@ -5,6 +5,8 @@
 
 // Includes EA31337 framework.
 #include <EA31337-classes/EA.mqh>
+#include <EA31337-classes/Indicators/Indi_AO.mqh>
+#include <EA31337-classes/Strategy.mqh>
 
 // Inputs.
 input string __Awesome_Parameters__ = "-- Awesome strategy params --";  // >>> Awesome <<<
