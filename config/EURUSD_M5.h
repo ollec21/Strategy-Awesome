@@ -12,7 +12,7 @@ struct Stg_Awesome_Params_M5 : StgParams {
     signal_open_filter = 1;
     signal_open_level = 0;
     signal_open_boost = 0;
-    signal_close_method = 0;
+    signal_close_method = -3;
     signal_close_level = 0;
     price_stop_method = 0;
     price_stop_level = 2;
