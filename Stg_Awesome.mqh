@@ -77,47 +77,63 @@ class Stg_Awesome : public Strategy {
     Indi_AO *_indi = Data();
     bool _is_valid = _indi[CURR].IsValid();
     bool _result = _is_valid;
-    double _level_pips = _level * Chart().GetPipSize();
-    switch (_cmd) {
-      case ORDER_TYPE_BUY:
-        // Buy: 1. Signal "saucer" (3 positive columns, medium column is smaller than 2 others).
-        // 2. Changing from negative values to positive.
-        _result = _indi[CURR][0] > _indi[PREV][0];
-        if (METHOD(_method, 0)) _result &= _indi[PREV][0] > _indi[PPREV][0];
-        if (METHOD(_method, 1)) _result &= _indi[PPREV][0] > _indi[3][0];
-        if (METHOD(_method, 2)) _result &= _indi[CURR][0] > 0;
-        if (METHOD(_method, 3)) _result &= _indi[PPREV][0] < 0;
-        break;
-      case ORDER_TYPE_SELL:
-        // Sell: 1. Signal "saucer" (3 negative columns, medium column is larger than 2 others).
-        // 2. Changing from positive values to negative.
-        _result = _indi[CURR][0] < _indi[PREV][0];
-        if (METHOD(_method, 0)) _result &= _indi[PREV][0] < _indi[PPREV][0];
-        if (METHOD(_method, 1)) _result &= _indi[PPREV][0] < _indi[3][0];
-        if (METHOD(_method, 2)) _result &= _indi[CURR][0] < 0;
-        if (METHOD(_method, 3)) _result &= _indi[PPREV][0] > 0;
-        break;
+    if (_is_valid) {
+      double _change_pc = Math::ChangeInPct(_indi[_shift + 2][0], _indi[_shift][0], true);
+      switch (_cmd) {
+        case ORDER_TYPE_BUY:
+          // Buy: 1. Signal "saucer" (3 positive columns, medium column is smaller than 2 others).
+          // 2. Changing from negative values to positive.
+          _result = _indi[CURR][0] > _indi[PREV][0];
+          _result &= _change_pc > _level;
+          if (METHOD(_method, 0)) _result &= _indi[PREV][0] > _indi[PPREV][0];
+          if (METHOD(_method, 1)) _result &= _indi[PPREV][0] > _indi[3][0];
+          if (METHOD(_method, 2)) _result &= _indi[CURR][0] > 0;
+          if (METHOD(_method, 3)) _result &= _indi[PPREV][0] < 0;
+          break;
+        case ORDER_TYPE_SELL:
+          // Sell: 1. Signal "saucer" (3 negative columns, medium column is larger than 2 others).
+          // 2. Changing from positive values to negative.
+          _result = _indi[CURR][0] < _indi[PREV][0];
+          _result &= _change_pc < -_level;
+          if (METHOD(_method, 0)) _result &= _indi[PREV][0] < _indi[PPREV][0];
+          if (METHOD(_method, 1)) _result &= _indi[PPREV][0] < _indi[3][0];
+          if (METHOD(_method, 2)) _result &= _indi[CURR][0] < 0;
+          if (METHOD(_method, 3)) _result &= _indi[PPREV][0] > 0;
+          break;
+      }
     }
     return _result;
   }
 
-  /**
-   * Gets price stop value for profit take or stop loss.
-   */
-  float PriceStop(ENUM_ORDER_TYPE _cmd, ENUM_ORDER_TYPE_VALUE _mode, int _method = 0, float _level = 0.0) {
-    Indi_AO *_indi = Data();
-    double _trail = _level * Market().GetPipSize();
-    int _direction = Order::OrderDirection(_cmd, _mode);
-    double _default_value = Market().GetCloseOffer(_cmd) + _trail * _method * _direction;
-    double _result = _default_value;
-    switch (_method) {
-      case 1: {
-        int _bar_count = (int)_level * 10;
-        _result = _direction > 0 ? _indi.GetPrice(PRICE_HIGH, _indi.GetHighest<double>(_bar_count))
-                                 : _indi.GetPrice(PRICE_LOW, _indi.GetLowest<double>(_bar_count));
-        break;
+    /**
+     * Gets price stop value for profit take or stop loss.
+     */
+    float PriceStop(ENUM_ORDER_TYPE _cmd, ENUM_ORDER_TYPE_VALUE _mode, int _method = 0, float _level = 0.0) {
+      Chart *_chart = sparams.GetChart();
+      Indi_AO *_indi = Data();
+      bool _is_valid = _indi[CURR].IsValid();
+      double _trail = _level * Market().GetPipSize();
+      int _bar_count = (int)_level;
+      int _bar_lowest = _indi.GetLowest<double>(_bar_count), _bar_highest = _indi.GetHighest<double>(_bar_count);
+      int _direction = Order::OrderDirection(_cmd, _mode);
+      double _change_pc = Math::ChangeInPct(_indi[PREV][2], _indi[CURR][0]);
+      double _default_value = Market().GetCloseOffer(_cmd) + _trail * _method * _direction;
+      double _price_offer = _chart.GetOpenOffer(_cmd);
+      double _result = _default_value;
+      ENUM_APPLIED_PRICE _ap = _direction > 0 ? PRICE_HIGH : PRICE_LOW;
+      switch (_method) {
+        case 1:
+          _result = _direction > 0 ? _indi.GetPrice(_ap, _bar_highest) : _indi.GetPrice(_ap, _bar_lowest);
+          break;
+        case 2:
+          _result = _direction > 0 ? fmax(_indi.GetPrice(_ap, _bar_lowest), _indi.GetPrice(_ap, _bar_highest))
+                                   : fmin(_indi.GetPrice(_ap, _bar_lowest), _indi.GetPrice(_ap, _bar_highest));
+          break;
+        case 3:
+          _result = Math::ChangeByPct(_price_offer, (float)_change_pc / _level);
+          break;
       }
+      _result = +_trail;
+      return (float)_result;
     }
-    return (float)_result;
-  }
-};
+  };
