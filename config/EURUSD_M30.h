@@ -8,7 +8,7 @@ struct Stg_Awesome_Params_M30 : StgParams {
   // Struct constructor.
   Stg_Awesome_Params_M30() : StgParams(stg_awesome_defaults) {
     lot_size = 0;
-    signal_open_method = 0;
+    signal_open_method = -2;
     signal_open_filter = 1;
     signal_open_level = 0;
     signal_open_boost = 0;
