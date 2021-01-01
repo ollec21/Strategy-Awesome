@@ -78,27 +78,22 @@ class Stg_Awesome : public Strategy {
     bool _is_valid = _indi[CURR].IsValid();
     bool _result = _is_valid;
     if (_is_valid) {
-      double _change_pc = Math::ChangeInPct(_indi[_shift + 2][0], _indi[_shift][0], true);
       switch (_cmd) {
         case ORDER_TYPE_BUY:
           // Buy: 1. Signal "saucer" (3 positive columns, medium column is smaller than 2 others).
           // 2. Changing from negative values to positive.
-          _result = _indi[CURR][0] > _indi[PREV][0];
-          _result &= _change_pc > _level;
-          if (METHOD(_method, 0)) _result &= _indi[PREV][0] > _indi[PPREV][0];
-          if (METHOD(_method, 1)) _result &= _indi[PPREV][0] > _indi[3][0];
-          if (METHOD(_method, 2)) _result &= _indi[CURR][0] > 0;
-          if (METHOD(_method, 3)) _result &= _indi[PPREV][0] < 0;
+          _result = _indi[CURR][0] < 0 && _indi.IsIncreasing(3);
+          _result &= _indi.IsIncByPct(_level, 0, 0, 2);
+          if (METHOD(_method, 0)) _result &= _indi.IsIncreasing(2, 0, 3);
+          if (METHOD(_method, 1)) _result &= _indi.IsIncreasing(2, 0, 5);
           break;
         case ORDER_TYPE_SELL:
           // Sell: 1. Signal "saucer" (3 negative columns, medium column is larger than 2 others).
           // 2. Changing from positive values to negative.
-          _result = _indi[CURR][0] < _indi[PREV][0];
-          _result &= _change_pc < -_level;
-          if (METHOD(_method, 0)) _result &= _indi[PREV][0] < _indi[PPREV][0];
-          if (METHOD(_method, 1)) _result &= _indi[PPREV][0] < _indi[3][0];
-          if (METHOD(_method, 2)) _result &= _indi[CURR][0] < 0;
-          if (METHOD(_method, 3)) _result &= _indi[PPREV][0] > 0;
+          _result = _indi[CURR][0] > 0 && _indi.IsDecreasing(3);
+          _result &= _indi.IsDecByPct(-_level, 0, 0, 2);
+          if (METHOD(_method, 0)) _result &= _indi.IsDecreasing(2, 0, 3);
+          if (METHOD(_method, 1)) _result &= _indi.IsDecreasing(2, 0, 5);
           break;
       }
     }
@@ -116,7 +111,7 @@ class Stg_Awesome : public Strategy {
       int _bar_count = (int)_level;
       int _bar_lowest = _indi.GetLowest<double>(_bar_count), _bar_highest = _indi.GetHighest<double>(_bar_count);
       int _direction = Order::OrderDirection(_cmd, _mode);
-      double _change_pc = Math::ChangeInPct(_indi[PREV][2], _indi[CURR][0]);
+      double _change_pc = Math::ChangeInPct(_indi[PREV][0], _indi[CURR][0]);
       double _default_value = Market().GetCloseOffer(_cmd) + _trail * _method * _direction;
       double _price_offer = _chart.GetOpenOffer(_cmd);
       double _result = _default_value;
