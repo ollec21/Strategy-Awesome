@@ -4,19 +4,19 @@
  */
 
 // User input params.
-INPUT float Awesome_LotSize = 0;                 // Lot size
-INPUT int Awesome_SignalOpenMethod = 0;          // Signal open method (0-1)
-INPUT float Awesome_SignalOpenLevel = 0.0004f;   // Signal open level (>0.0001)
-INPUT int Awesome_SignalOpenFilterMethod = 0;    // Signal open filter method (0-1)
-INPUT int Awesome_SignalOpenBoostMethod = 0;     // Signal open boost method (0-1)
-INPUT float Awesome_SignalCloseLevel = 0.0004f;  // Signal close level (>0.0001)
-INPUT int Awesome_SignalCloseMethod = 0;         // Signal close method
-INPUT int Awesome_PriceStopMethod = 0;           // Price stop method
-INPUT float Awesome_PriceStopLevel = 0;          // Price stop level
-INPUT int Awesome_TickFilterMethod = 0;          // Tick filter method
-INPUT float Awesome_MaxSpread = 6.0;             // Max spread to trade (pips)
-INPUT int Awesome_Shift = 0;                     // Shift (relative to the current bar, 0 - default)
-INPUT int Awesome_OrderCloseTime = -20;          // Order close time in mins (>0) or bars (<0)
+INPUT float Awesome_LotSize = 0;               // Lot size
+INPUT int Awesome_SignalOpenMethod = 0;        // Signal open method (0-1)
+INPUT float Awesome_SignalOpenLevel = 0.0f;    // Signal open level (>0.0001)
+INPUT int Awesome_SignalOpenFilterMethod = 1;  // Signal open filter method (0-1)
+INPUT int Awesome_SignalOpenBoostMethod = 0;   // Signal open boost method (0-1)
+INPUT float Awesome_SignalCloseLevel = 0.0f;   // Signal close level (>0.0001)
+INPUT int Awesome_SignalCloseMethod = 0;       // Signal close method
+INPUT int Awesome_PriceStopMethod = 0;         // Price stop method
+INPUT float Awesome_PriceStopLevel = 0;        // Price stop level
+INPUT int Awesome_TickFilterMethod = 1;        // Tick filter method
+INPUT float Awesome_MaxSpread = 4.0;           // Max spread to trade (pips)
+INPUT int Awesome_Shift = 0;                   // Shift (relative to the current bar, 0 - default)
+INPUT int Awesome_OrderCloseTime = -20;        // Order close time in mins (>0) or bars (<0)
 
 // Structs.
 
@@ -102,35 +102,35 @@ class Stg_Awesome : public Strategy {
     return _result;
   }
 
-    /**
-     * Gets price stop value for profit take or stop loss.
-     */
-    float PriceStop(ENUM_ORDER_TYPE _cmd, ENUM_ORDER_TYPE_VALUE _mode, int _method = 0, float _level = 0.0) {
-      Chart *_chart = sparams.GetChart();
-      Indi_AO *_indi = Data();
-      bool _is_valid = _indi[CURR].IsValid();
-      double _trail = _level * Market().GetPipSize();
-      int _bar_count = (int)_level;
-      int _bar_lowest = _indi.GetLowest<double>(_bar_count), _bar_highest = _indi.GetHighest<double>(_bar_count);
-      int _direction = Order::OrderDirection(_cmd, _mode);
-      double _change_pc = Math::ChangeInPct(_indi[PREV][0], _indi[CURR][0]);
-      double _default_value = Market().GetCloseOffer(_cmd) + _trail * _method * _direction;
-      double _price_offer = _chart.GetOpenOffer(_cmd);
-      double _result = _default_value;
-      ENUM_APPLIED_PRICE _ap = _direction > 0 ? PRICE_HIGH : PRICE_LOW;
-      switch (_method) {
-        case 1:
-          _result = _direction > 0 ? _indi.GetPrice(_ap, _bar_highest) : _indi.GetPrice(_ap, _bar_lowest);
-          break;
-        case 2:
-          _result = _direction > 0 ? fmax(_indi.GetPrice(_ap, _bar_lowest), _indi.GetPrice(_ap, _bar_highest))
-                                   : fmin(_indi.GetPrice(_ap, _bar_lowest), _indi.GetPrice(_ap, _bar_highest));
-          break;
-        case 3:
-          _result = Math::ChangeByPct(_price_offer, (float)_change_pc / _level);
-          break;
-      }
-      _result = +_trail;
-      return (float)_result;
+  /**
+   * Gets price stop value for profit take or stop loss.
+   */
+  float PriceStop(ENUM_ORDER_TYPE _cmd, ENUM_ORDER_TYPE_VALUE _mode, int _method = 0, float _level = 0.0) {
+    Chart *_chart = sparams.GetChart();
+    Indi_AO *_indi = Data();
+    bool _is_valid = _indi[CURR].IsValid();
+    double _trail = _level * Market().GetPipSize();
+    int _bar_count = (int)_level;
+    int _bar_lowest = _indi.GetLowest<double>(_bar_count), _bar_highest = _indi.GetHighest<double>(_bar_count);
+    int _direction = Order::OrderDirection(_cmd, _mode);
+    double _change_pc = Math::ChangeInPct(_indi[PREV][0], _indi[CURR][0]);
+    double _default_value = Market().GetCloseOffer(_cmd) + _trail * _method * _direction;
+    double _price_offer = _chart.GetOpenOffer(_cmd);
+    double _result = _default_value;
+    ENUM_APPLIED_PRICE _ap = _direction > 0 ? PRICE_HIGH : PRICE_LOW;
+    switch (_method) {
+      case 1:
+        _result = _direction > 0 ? _indi.GetPrice(_ap, _bar_highest) : _indi.GetPrice(_ap, _bar_lowest);
+        break;
+      case 2:
+        _result = _direction > 0 ? fmax(_indi.GetPrice(_ap, _bar_lowest), _indi.GetPrice(_ap, _bar_highest))
+                                 : fmin(_indi.GetPrice(_ap, _bar_lowest), _indi.GetPrice(_ap, _bar_highest));
+        break;
+      case 3:
+        _result = Math::ChangeByPct(_price_offer, (float)_change_pc / _level);
+        break;
     }
-  };
+    _result = +_trail;
+    return (float)_result;
+  }
+};
