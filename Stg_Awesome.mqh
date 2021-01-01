@@ -80,20 +80,22 @@ class Stg_Awesome : public Strategy {
     if (_is_valid) {
       switch (_cmd) {
         case ORDER_TYPE_BUY:
-          // Buy: 1. Signal "saucer" (3 positive columns, medium column is smaller than 2 others).
-          // 2. Changing from negative values to positive.
+          // Signal "saucer": 3 positive columns, medium column is smaller than 2 others.
           _result = _indi[CURR][0] < 0 && _indi.IsIncreasing(3);
           _result &= _indi.IsIncByPct(_level, 0, 0, 2);
           if (METHOD(_method, 0)) _result &= _indi.IsIncreasing(2, 0, 3);
           if (METHOD(_method, 1)) _result &= _indi.IsIncreasing(2, 0, 5);
+          // Signal: Changing from negative values to positive.
+          if (METHOD(_method, 2)) _result &= _indi[PPREV][0] > 0;
           break;
         case ORDER_TYPE_SELL:
-          // Sell: 1. Signal "saucer" (3 negative columns, medium column is larger than 2 others).
-          // 2. Changing from positive values to negative.
+          // Signal "saucer": 3 negative columns, medium column is larger than 2 others.
           _result = _indi[CURR][0] > 0 && _indi.IsDecreasing(3);
           _result &= _indi.IsDecByPct(-_level, 0, 0, 2);
           if (METHOD(_method, 0)) _result &= _indi.IsDecreasing(2, 0, 3);
           if (METHOD(_method, 1)) _result &= _indi.IsDecreasing(2, 0, 5);
+          // Signal: Changing from positive values to negative.
+          if (METHOD(_method, 2)) _result &= _indi[PPREV][0] < 0;
           break;
       }
     }
