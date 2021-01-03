@@ -6,9 +6,6 @@
 // Defines indicator's parameter values for the given pair symbol and timeframe.
 struct Indi_Awesome_Params_{{ Timeframe }} : Indi_Awesome_Params {
   Indi_Awesome_Params_{{ Timeframe }}() : Indi_Awesome_Params(indi_awesome_defaults, PERIOD_{{ Timeframe }}) {
-    applied_price = (ENUM_APPLIED_PRICE){{ Awesome_Indi_Awesome_Applied_Price | default(0) }};
-    ma_method = {{ Awesome_Indi_Awesome_MA_Method | default(0) }};
-    period = {{ Awesome_Indi_Awesome_Period | default(0) }};
     shift = {{ Awesome_Shift | default(0) }};
   }
 } indi_awesome_{{ Timeframe | lower }};
