@@ -1,6 +1,6 @@
 Awesome_Indi_Awesome_Applied_Price={{ applied_price | replace("(ENUM_APPLIED_PRICE)", "") | int | default(0) }}
 Awesome_Indi_Awesome_MA_Method={{ ma_method | default(0) }}
-Awesome_Indi_Awesome_Period={{ period | default(4) }}
+Awesome_Indi_Awesome_Period={{ (period | default(0) | int) }}
 Awesome_Indi_Awesome_Shift={{ shift | default(0) }}
 Awesome_LotSize={{ lot_size | default(0) }}
 Awesome_PriceStopLevel={{ price_stop_level | replace("(float)", "") | float | default(0) }}
