@@ -22,7 +22,7 @@ struct Stg_Awesome_Params_{{ Timeframe }} : StgParams {
     signal_close_method = {{ Awesome_SignalCloseMethod | default(0) }};
     signal_close_level = (float){{ Awesome_SignalCloseLevel | default(0) }};
     price_stop_method = {{ Awesome_PriceStopMethod | default(0) }};
-    price_stop_level = {{ Awesome_SignalCloseLevel | default(1) }};
+    price_stop_level = (float){{ Awesome_SignalCloseLevel | default(1) }};
     tick_filter_method = {{ Awesome_TickFilterMethod  | default(1) }};
     max_spread = {{ Awesome_MaxSpread | default(0) }};
   }
