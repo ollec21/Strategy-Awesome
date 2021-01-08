@@ -3,17 +3,22 @@
  * Defines default strategy parameter values for the given timeframe.
  */
 
+// Defines indicator's parameter values for the given pair symbol and timeframe.
+struct Indi_Awesome_Params_M5 : AOParams {
+  Indi_Awesome_Params_M5() : AOParams(indi_awesome_defaults, PERIOD_M5) { shift = 0; }
+} indi_awesome_m5;
+
 // Defines strategy's parameter values for the given pair symbol and timeframe.
 struct Stg_Awesome_Params_M5 : StgParams {
   // Struct constructor.
   Stg_Awesome_Params_M5() : StgParams(stg_awesome_defaults) {
     lot_size = 0;
-    signal_open_method = -1;
+    signal_open_method = 0;
     signal_open_filter = 27;
     signal_open_level = (float)0;
     signal_open_boost = 0;
-    signal_close_method = -3;
-    signal_close_level = (float)0;
+    signal_close_method = 4;
+    signal_close_level = (float)10;
     price_stop_method = 0;
     price_stop_level = (float)2;
     tick_filter_method = 1;
