@@ -15,10 +15,10 @@ struct Stg_Awesome_Params_M30 : StgParams {
     lot_size = 0;
     signal_open_method = 0;
     signal_open_filter = 2;
-    signal_open_level = (float)0;
+    signal_open_level = (float)20;
     signal_open_boost = 0;
     signal_close_method = 4;
-    signal_close_level = (float)10;
+    signal_close_level = (float)40;
     price_stop_method = 0;
     price_stop_level = (float)2;
     tick_filter_method = 1;

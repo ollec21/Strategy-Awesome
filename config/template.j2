@@ -5,7 +5,7 @@
 
 // Defines indicator's parameter values for the given pair symbol and timeframe.
 struct Indi_Awesome_Params_{{ Timeframe }} : AOParams {
-  Indi_Awesome_Params_{{ Timeframe }}() : AOParams(indi_awesome_defaults, PERIOD_{{ Timeframe }}) { shift = {{ Awesome_Shift | default(0) }}; }
+  Indi_Awesome_Params_{{ Timeframe }}() : AOParams(indi_awesome_defaults, PERIOD_{{ Timeframe }}) { shift = {{ Awesome_Indi_Awesome_Shift | default(0) }}; }
 } indi_awesome_{{ Timeframe | lower }};
 
 // Defines strategy's parameter values for the given pair symbol and timeframe.
