@@ -62,10 +62,10 @@ class Stg_Awesome : public Strategy {
   static Stg_Awesome *Init(ENUM_TIMEFRAMES _tf = NULL, long _magic_no = NULL, ENUM_LOG_LEVEL _log_level = V_INFO) {
     // Initialize strategy initial values.
     StgParams _stg_params(stg_awesome_defaults);
-    if (!Terminal::IsOptimization()) {
-      SetParamsByTf<StgParams>(_stg_params, _tf, stg_awesome_m1, stg_awesome_m5, stg_awesome_m15, stg_awesome_m30,
-                               stg_awesome_h1, stg_awesome_h4, stg_awesome_h8);
-    }
+#ifdef __config__
+    SetParamsByTf<StgParams>(_stg_params, _tf, stg_awesome_m1, stg_awesome_m5, stg_awesome_m15, stg_awesome_m30,
+                             stg_awesome_h1, stg_awesome_h4, stg_awesome_h8);
+#endif
     // Initialize indicator.
     AOParams _indi_params(_tf);
     _stg_params.SetIndicator(new Indi_AO(_indi_params));
