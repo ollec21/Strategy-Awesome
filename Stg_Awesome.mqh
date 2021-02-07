@@ -4,19 +4,20 @@
  */
 
 // User input params.
-INPUT float Awesome_LotSize = 0;               // Lot size
-INPUT int Awesome_SignalOpenMethod = 0;        // Signal open method (-7-7)
-INPUT float Awesome_SignalOpenLevel = 0.0f;    // Signal open level (>0.0001)
-INPUT int Awesome_SignalOpenFilterMethod = 1;  // Signal open filter method (0-1)
-INPUT int Awesome_SignalOpenBoostMethod = 0;   // Signal open boost method (0-1)
-INPUT float Awesome_SignalCloseLevel = 0.0f;   // Signal close level (>0.0001)
-INPUT int Awesome_SignalCloseMethod = 0;       // Signal close method (-7-7)
-INPUT int Awesome_PriceStopMethod = 0;         // Price stop method
-INPUT float Awesome_PriceStopLevel = 0;        // Price stop level
-INPUT int Awesome_TickFilterMethod = 1;        // Tick filter method
-INPUT float Awesome_MaxSpread = 4.0;           // Max spread to trade (pips)
-INPUT int Awesome_Shift = 0;                   // Shift (relative to the current bar, 0 - default)
-INPUT int Awesome_OrderCloseTime = -20;        // Order close time in mins (>0) or bars (<0)
+INPUT string __Awesome_Parameters__ = "-- Awesome strategy params --";  // >>> Awesome <<<
+INPUT float Awesome_LotSize = 0;                                        // Lot size
+INPUT int Awesome_SignalOpenMethod = 0;                                 // Signal open method (-7-7)
+INPUT float Awesome_SignalOpenLevel = 0.0f;                             // Signal open level (>0.0001)
+INPUT int Awesome_SignalOpenFilterMethod = 1;                           // Signal open filter method (0-1)
+INPUT int Awesome_SignalOpenBoostMethod = 0;                            // Signal open boost method (0-1)
+INPUT float Awesome_SignalCloseLevel = 0.0f;                            // Signal close level (>0.0001)
+INPUT int Awesome_SignalCloseMethod = 0;                                // Signal close method (-7-7)
+INPUT int Awesome_PriceStopMethod = 0;                                  // Price stop method
+INPUT float Awesome_PriceStopLevel = 0;                                 // Price stop level
+INPUT int Awesome_TickFilterMethod = 1;                                 // Tick filter method
+INPUT float Awesome_MaxSpread = 4.0;                                    // Max spread to trade (pips)
+INPUT int Awesome_Shift = 0;             // Shift (relative to the current bar, 0 - default)
+INPUT int Awesome_OrderCloseTime = -20;  // Order close time in mins (>0) or bars (<0)
 INPUT string __Awesome_Indi_Awesome_Parameters__ =
     "-- Awesome strategy: Awesome indicator params --";  // >>> Awesome strategy: Awesome indicator <<<
 INPUT int Awesome_Indi_Awesome_Shift = 0;                // Shift
@@ -61,10 +62,10 @@ class Stg_Awesome : public Strategy {
   static Stg_Awesome *Init(ENUM_TIMEFRAMES _tf = NULL, long _magic_no = NULL, ENUM_LOG_LEVEL _log_level = V_INFO) {
     // Initialize strategy initial values.
     StgParams _stg_params(stg_awesome_defaults);
-    if (!Terminal::IsOptimization()) {
-      SetParamsByTf<StgParams>(_stg_params, _tf, stg_awesome_m1, stg_awesome_m5, stg_awesome_m15, stg_awesome_m30,
-                               stg_awesome_h1, stg_awesome_h4, stg_awesome_h8);
-    }
+#ifdef __config__
+    SetParamsByTf<StgParams>(_stg_params, _tf, stg_awesome_m1, stg_awesome_m5, stg_awesome_m15, stg_awesome_m30,
+                             stg_awesome_h1, stg_awesome_h4, stg_awesome_h8);
+#endif
     // Initialize indicator.
     AOParams _indi_params(_tf);
     _stg_params.SetIndicator(new Indi_AO(_indi_params));
@@ -74,7 +75,6 @@ class Stg_Awesome : public Strategy {
     _stg_params.SetTf(_tf, _Symbol);
     // Initialize strategy instance.
     Strategy *_strat = new Stg_Awesome(_stg_params, "Awesome");
-    _stg_params.SetStops(_strat, _strat);
     return _strat;
   }
 

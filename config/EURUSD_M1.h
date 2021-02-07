@@ -17,7 +17,7 @@ struct Stg_Awesome_Params_M1 : StgParams {
     signal_open_filter = 1;
     signal_open_level = (float)40;
     signal_open_boost = 0;
-    signal_close_method = 4;
+    signal_close_method = 3;
     signal_close_level = (float)40;
     price_stop_method = 0;
     price_stop_level = (float)2;

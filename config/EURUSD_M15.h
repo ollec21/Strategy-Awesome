@@ -13,11 +13,11 @@ struct Stg_Awesome_Params_M15 : StgParams {
   // Struct constructor.
   Stg_Awesome_Params_M15() : StgParams(stg_awesome_defaults) {
     lot_size = 0;
-    signal_open_method = 0;
+    signal_open_method = 1;
     signal_open_filter = 2;
     signal_open_level = (float)35;
     signal_open_boost = 0;
-    signal_close_method = 4;
+    signal_close_method = 0;
     signal_close_level = (float)40;
     price_stop_method = 0;
     price_stop_level = (float)2;
